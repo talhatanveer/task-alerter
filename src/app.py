@@ -1,8 +1,7 @@
-import time, os
+import json, os
 from urllib import request
-from twilio.rest import Client
 from flask import Flask, request, make_response
-from utils import send_sms, fetch_csv
+from utils import send_sms, fetch_csv, find_user
 
 API_KEY = os.environ['API_KEY']
 PORT = os.environ['PORT']
@@ -30,8 +29,18 @@ def hello_world():
 # GET A SINGLE CHORE
 @app.route("/chore", methods=["GET"])
 def get_chore():
-    args = request.args
-    print(args)
+    email = request.args.get('email')
+
+    if email == None or email == '':
+        return {'chore':'No email was supplied'}
+
+    database = fetch_csv()
+    user = find_user(database, email)
+
+    if user == None:
+        return {'chore': 'Could not find a chore for the given email'}
+
+    return {'chore': user['chore']}
 
 
 # FLASK SERVER
