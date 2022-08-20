@@ -22,9 +22,20 @@ def auth():
             return response
 
 # SEND OUT CHORES
-@app.route("/deploy", methods=["GET"])
-def hello_world():
-    return "<p>Hello, World!</p>"
+@app.route("/chores", methods=["POST"])
+def send_chores():
+    
+    database = fetch_csv()
+    for user in database:
+        phone_number = user['phone number']
+
+        if phone_number != '':
+            send_sms(
+                f"Hey {user['person']}, your chores for today are: {user['chore']}", 
+                f"+{phone_number}"
+            )
+    
+    return {}
 
 # GET A SINGLE CHORE
 @app.route("/chore", methods=["GET"])
@@ -35,7 +46,7 @@ def get_chore():
         return {'chore':'No email was supplied'}
 
     database = fetch_csv()
-    user = find_user(database, email)
+    user = find_user(database, email.lower())
 
     if user == None:
         return {'chore': 'Could not find a chore for the given email'}
