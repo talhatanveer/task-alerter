@@ -1,5 +1,5 @@
 from twilio.rest import Client
-import os, requests
+import os, requests, csv
 
 account_sid = os.environ['TWILIO_SID']
 auth_token  = os.environ['TWILIO_AUTH_TOKEN']
@@ -16,20 +16,19 @@ def send_sms(number, message):
 def fetch_csv():
     try:
         response = requests.get(os.environ['CSV_URL'])
-        parsed_csv = parse_csv(response.text)
-        return list(parsed_csv)
+        rows = list(csv.reader(response.text.splitlines()))
+        return parse_csv(rows)
     except Exception as e:
         print(e)
         return False
 
-def parse_csv(str: str):
-    lines = str.splitlines()
+def parse_csv(lines: list):
     data = []
-    headers = [x.lower() for x in lines[0].split(',')]
+    headers = [x.lower() for x in lines[0]]
     header_count = len(headers)
 
     for i in range(1, len(lines)):
-        row = lines[i].split(',')
+        row = lines[i]
         tmp = {}
         for c in range(0, header_count):
             tmp[headers[c]] = row[c]
