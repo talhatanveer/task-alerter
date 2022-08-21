@@ -10,6 +10,7 @@ requests = "*"
 waitress = "*"
 twilio = "*"
 flask = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.9"
