@@ -1,11 +1,10 @@
 import os
 from urllib import request
-from time import time, sleep
+from time import time
 from flask import Flask, request, make_response
 from utils import (
     send_sms, 
-    fetch_csv, 
-    find_user,
+    fetch_csv,
     get_user_index,
     date_modulo
 )

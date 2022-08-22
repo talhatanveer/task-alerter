@@ -10,14 +10,14 @@ auth_token  = os.environ['TWILIO_AUTH_TOKEN']
 
 client = Client(account_sid, auth_token)
 
-start_date = datetime(2022, 8, 21).astimezone(tz = TZ)
+start_date = datetime(2022, 8, 21, 16, 0, 0).astimezone(tz = TZ)
 
 def send_sms(message: str, number: str):
     message = client.messages.create(
         to=number, 
         from_=os.environ['TWILIO_PHONE_NUMBER'],
         body=message
-    )   
+    )
 
 def fetch_csv():
     try:
