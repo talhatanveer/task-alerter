@@ -51,6 +51,7 @@ def find_user(database: list, email: str):
     
     return matches[0]
 
+
 def get_user_index(database: str, email: list):
     for i in range(0, len(database)):
         if database[i]['email'].lower() == email.lower():
@@ -60,7 +61,7 @@ def get_user_index(database: str, email: list):
 
 # automatically rotate chores
 # chores rotate 10:00 a.m. at the specified timezone
-def date_modulo(n: int, i: int):
+def date_modulo(n: int, i: int, offset = 0):
     today = datetime.fromtimestamp(time.time()).astimezone(tz=TZ)
     delta = (today - start_date).days
 
@@ -68,4 +69,4 @@ def date_modulo(n: int, i: int):
     if today.hour > 0 and today.hour < 10 and delta != 0:
         delta -= 1
 
-    return (i + delta) % n
+    return (i + delta + offset) % n
