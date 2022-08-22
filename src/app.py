@@ -1,13 +1,17 @@
 import os
 from urllib import request
 from time import time
-from flask import Flask, request, make_response
+from flask import (
+    Flask, request, make_response, render_template
+)
+
 from utils import (
     send_sms, 
     fetch_csv,
     get_user_index,
     date_modulo,
-    days_ahead
+    days_ahead,
+    serve_html
 )
 
 API_KEY = os.environ['API_KEY']
@@ -19,6 +23,8 @@ LAST_SEND = 0 # unix timestamp in seconds
 
 app = Flask(__name__)
 
+PUBLIC = ["/schedule"]
+
 # AUTHENTICATION
 @app.before_request
 def auth():
@@ -27,7 +33,7 @@ def auth():
     except Exception as e:
         key = False
     finally:
-        if key != API_KEY:
+        if key != API_KEY and request.path not in PUBLIC:
             response = make_response({'message':'An invalid or no API Key was supplied'})
             response.status_code = 403
             return response
@@ -83,6 +89,10 @@ def get_chore():
 @app.route("/chore", methods=["GET"])
 def _get_chore():
     return get_chore()
+
+@app.route("/schedule", methods=["GET"])
+def schedule():
+    return serve_html('chore_list.html')
 
 # FLASK SERVER
 if __name__ == "__main__":

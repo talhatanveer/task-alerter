@@ -97,7 +97,7 @@ def days_ahead(database, days):
             if phone_number == '':
                 continue
 
-            chore = database[date_modulo(dbSize, i, count)]
+            chore = database[date_modulo(dbSize, j, count)]
 
             if phone_number not in days_ahead:
                 days_ahead[phone_number] = {
@@ -115,3 +115,7 @@ def days_ahead(database, days):
         count += 1
 
     return days_ahead
+
+def serve_html(file):
+    with open(f"ui/{file}", 'r') as f:
+        return f.read()
