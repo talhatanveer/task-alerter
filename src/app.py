@@ -1,14 +1,13 @@
 import os
 from urllib import request
 from time import time
-from datetime import datetime, timedelta
 from flask import Flask, request, make_response
 from utils import (
     send_sms, 
     fetch_csv,
     get_user_index,
     date_modulo,
-    TZ
+    days_ahead
 )
 
 API_KEY = os.environ['API_KEY']
@@ -44,48 +43,7 @@ def send_chores():
     LAST_SEND = time()
 
     database = fetch_csv()
-    dbSize = len(database)
-    today = datetime.fromtimestamp(time()).astimezone(tz = TZ)
-
-    week_ahead = {}
-    exclude = ["Sat", "Fri"]
-    i = 0
-    count = 0
-
-    while count < 7:
-        date = (today + timedelta(days = i))
-        i += 1
-
-        if date.strftime('%a') in exclude:
-            continue
-
-        date_str = date.strftime("%a, %b %d")
-
-        for j in range(0, dbSize):
-            phone_number = database[j]['phone number']
-
-            # no phone number supplied?
-            if phone_number == '':
-                continue
-
-            chore = database[date_modulo(dbSize, i, count)]
-
-            if phone_number not in week_ahead:
-                week_ahead[phone_number] = {
-                    "chores": "",
-                    "name": database[j]['person'].split(" ")[0]
-                }
-            
-            week_ahead[phone_number]["chores"] += \
-                f"{date_str} - {chore['chore']} " + \
-                f"(X Penalty: {chore['x penalty']})"
-
-            if count < 6:
-                week_ahead[phone_number]["chores"] += "\n\n"
-
-        count += 1
-
-    # print(week_ahead)
+    week_ahead = days_ahead(database, 7)
 
     for phone_number in week_ahead:
         message = \

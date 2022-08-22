@@ -1,5 +1,5 @@
 from twilio.rest import Client
-from datetime import datetime
+from datetime import datetime, timedelta
 from pytz import timezone
 import os, requests, csv, time
 
@@ -70,3 +70,48 @@ def date_modulo(n: int, i: int, offset = 0):
         delta -= 1
 
     return (i + delta + offset) % n
+
+
+def days_ahead(database, days):
+    dbSize = len(database)
+    today = datetime.fromtimestamp(time.time()).astimezone(tz = TZ)
+
+    days_ahead = {}
+    exclude = ["Sat", "Fri"]
+    i = 0
+    count = 0
+
+    while count < days:
+        date = (today + timedelta(days = i))
+        i += 1
+
+        if date.strftime('%a') in exclude:
+            continue
+
+        date_str = date.strftime("%a, %b %d")
+
+        for j in range(0, dbSize):
+            phone_number = database[j]['phone number']
+
+            # no phone number supplied?
+            if phone_number == '':
+                continue
+
+            chore = database[date_modulo(dbSize, i, count)]
+
+            if phone_number not in days_ahead:
+                days_ahead[phone_number] = {
+                    "chores": "",
+                    "name": database[j]['person'].split(" ")[0]
+                }
+            
+            days_ahead[phone_number]["chores"] += \
+                f"{date_str} - {chore['chore']} " + \
+                f"(X Penalty: {chore['x penalty']})"
+
+            if count < days - 1:
+                days_ahead[phone_number]["chores"] += "\n\n"
+
+        count += 1
+
+    return days_ahead
