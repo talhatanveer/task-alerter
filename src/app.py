@@ -2,7 +2,7 @@ import os
 from urllib import request
 from time import time
 from flask import (
-    Flask, request, make_response, render_template
+    Flask, request, make_response, render_template, json
 )
 
 from utils import (
@@ -10,8 +10,7 @@ from utils import (
     fetch_csv,
     get_user_index,
     date_modulo,
-    days_ahead,
-    serve_html
+    days_ahead
 )
 
 API_KEY = os.environ['API_KEY']
@@ -21,7 +20,7 @@ PORT = os.environ['PORT']
 SEND_WAIT = 120 # in seconds
 LAST_SEND = 0 # unix timestamp in seconds
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='ui/')
 
 PUBLIC = ["/schedule"]
 
@@ -92,7 +91,9 @@ def _get_chore():
 
 @app.route("/schedule", methods=["GET"])
 def schedule():
-    return serve_html('chore_list.html')
+    database = fetch_csv()
+    week_ahead = days_ahead(database, 7, "<br />")
+    return render_template('chore_list.html', chores=json.dumps(week_ahead))
 
 # FLASK SERVER
 if __name__ == "__main__":

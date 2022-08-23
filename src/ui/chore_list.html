@@ -1,3 +1,57 @@
-<h1>HELLO</h1>
+<h1>DTD Chore Schedule Fall 2022</h1>
+<div>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Chore List</th>
+        </tr>
 
-<h4>%s</h4>
+        <tbody id="chore-table">
+            
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var chores = JSON.parse({{chores|tojson}});
+    var table = document.getElementById("chore-table");
+
+    let numbers = Object.keys(chores);
+    let str = "";
+    for(let i = 0; i < numbers.length; i++){
+        let chore = chores[numbers[i]];
+        str += `
+            <tr>
+                <td>${chore.name}</td>
+                <td>${chore.chores}</td>
+            </tr>
+        `;
+    }
+
+    table.innerHTML = str;
+</script>
+
+<style>
+table {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+ td, th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+ tr:nth-child(even){background-color: #f2f2f2;}
+
+ tr:hover {background-color: #ddd;}
+
+ th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #04AA6D;
+  color: white;
+}
+</style>

@@ -72,7 +72,7 @@ def date_modulo(n: int, i: int, offset = 0):
     return (i + delta + offset) % n
 
 
-def days_ahead(database, days):
+def days_ahead(database, days, separator="\n"):
     dbSize = len(database)
     today = datetime.fromtimestamp(time.time()).astimezone(tz = TZ)
 
@@ -110,7 +110,7 @@ def days_ahead(database, days):
                 f"(X Penalty: {chore['x penalty']})"
 
             if count < days - 1:
-                days_ahead[phone_number]["chores"] += "\n\n"
+                days_ahead[phone_number]["chores"] += f"{separator}{separator}"
 
         count += 1
 
