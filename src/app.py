@@ -10,7 +10,8 @@ from utils import (
     fetch_csv,
     get_user_index,
     date_modulo,
-    days_ahead
+    days_ahead,
+    get_chore_today
 )
 
 API_KEY = os.environ['API_KEY']
@@ -80,9 +81,9 @@ def get_chore():
             'message': 'Could not find a chore for the given email'
         }
 
-    user = database[date_modulo(len(database), user_idx)]
+    chore = get_chore_today(database, user_idx)
 
-    return {'chore': user['chore'], 'message': user['chore']}
+    return {'chore': chore, 'message': chore}
 
 # support for old route after refactor
 @app.route("/chore", methods=["GET"])
@@ -94,6 +95,11 @@ def schedule():
     database = fetch_csv()
     week_ahead = days_ahead(database, 7, "<br />")
     return render_template('chore_list.html', chores=json.dumps(week_ahead))
+
+@app.route("/x", methods=["POST"])
+def issue_x():
+    email = request.args.get("email")
+
 
 # FLASK SERVER
 if __name__ == "__main__":
