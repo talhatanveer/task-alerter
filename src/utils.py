@@ -10,7 +10,7 @@ auth_token  = os.environ['TWILIO_AUTH_TOKEN']
 
 client = Client(account_sid, auth_token)
 
-start_date = datetime(2022, 8, 21, 0, 0, 0).astimezone(tz = TZ)
+start_date = datetime(2022, 8, 20, 10, 0, 0).astimezone(tz = TZ)
 
 def send_sms(message: str, number: str):
     message = client.messages.create(
@@ -63,14 +63,11 @@ def get_user_index(database: str, email: list):
 # chores rotate 10:00 a.m. at the specified timezone
 def date_modulo(n: int, i: int, today = datetime.fromtimestamp(time.time()).astimezone(tz=TZ)):
     delta = (today - start_date).days
-
+    
     return (i + delta) % n
 
 def get_chore_today(database, i):
     today = datetime.fromtimestamp(time.time()).astimezone(tz = TZ)
-
-    if today.hour > 0 and today.hour < 10:
-        today -= timedelta(days = 1)
 
     return database[date_modulo(len(database), i, today)]['chore']
     
@@ -78,12 +75,14 @@ def days_ahead(database, days, separator="\n"):
     dbSize = len(database)
     today = datetime.fromtimestamp(time.time()).astimezone(tz = TZ)
 
-    if today.hour > 0 and today.hour < 10:
-        today -= timedelta(days = 1)
-
     days_ahead = {}
     exclude = ["Sat", "Fri"]
-    i = 0
+
+    if today.hour > 0 and today.hour < 10:
+        i = -1
+    else:
+        i = 0
+    
     count = 0
 
     while count < days:
@@ -92,7 +91,7 @@ def days_ahead(database, days, separator="\n"):
 
         if date.strftime('%a') in exclude:
             continue
-
+        
         date_str = date.strftime("%a, %b %d")
 
         for j in range(0, dbSize):
