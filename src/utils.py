@@ -63,7 +63,7 @@ def get_user_index(database: str, email: list):
 # chores rotate 10:00 a.m. at the specified timezone
 def date_modulo(n: int, i: int, today = datetime.fromtimestamp(time.time()).astimezone(tz=TZ)):
     delta = (today - start_date).days
-    
+
     return (i + delta) % n
 
 def get_chore_today(database, i):
@@ -74,11 +74,12 @@ def get_chore_today(database, i):
 def days_ahead(database, days, separator="\n"):
     dbSize = len(database)
     today = datetime.fromtimestamp(time.time()).astimezone(tz = TZ)
+    # today = datetime(2022, 9, 1, 10, 30, 0).astimezone(tz = TZ)
 
     days_ahead = {}
     exclude = ["Sat", "Fri"]
 
-    if today.hour > 0 and today.hour < 10:
+    if today.hour < 10:
         i = -1
     else:
         i = 0
