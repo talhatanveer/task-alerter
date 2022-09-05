@@ -1,7 +1,7 @@
 from twilio.rest import Client
 from datetime import datetime, timedelta
 from pytz import timezone
-import os, requests, csv, time
+import os, requests, csv, time, math
 
 TZ = timezone('US/Central')
 
@@ -10,7 +10,7 @@ auth_token  = os.environ['TWILIO_AUTH_TOKEN']
 
 client = Client(account_sid, auth_token)
 
-start_date = datetime(2022, 8, 20, 10, 0, 0).astimezone(tz = TZ)
+start_date = datetime(2022, 8, 18, 10, 0, 0).astimezone(tz = TZ)
 
 def send_sms(message: str, number: str):
     message = client.messages.create(
@@ -64,7 +64,12 @@ def get_user_index(database: str, email: list):
 def date_modulo(n: int, i: int, today = datetime.fromtimestamp(time.time()).astimezone(tz=TZ)):
     delta = (today - start_date).days
 
-    return (i + delta) % n
+    weeks = math.floor(delta / 7) * 2
+
+    if today.weekday() >= 3 and today.weekday() <= 4:
+        weeks -= 2
+
+    return (i + delta - weeks) % n
 
 def get_chore_today(database, i):
     today = datetime.fromtimestamp(time.time()).astimezone(tz = TZ)
@@ -74,7 +79,8 @@ def get_chore_today(database, i):
 def days_ahead(database, days, separator="\n"):
     dbSize = len(database)
     today = datetime.fromtimestamp(time.time()).astimezone(tz = TZ)
-    # today = datetime(2022, 9, 1, 10, 30, 0).astimezone(tz = TZ)
+    # today = datetime(2022, 9, 11, 9, 30, 0).astimezone(tz = TZ)
+    today_day = today.strftime("%a")
 
     days_ahead = {}
     exclude = ["Sat", "Fri"]
@@ -83,9 +89,25 @@ def days_ahead(database, days, separator="\n"):
         i = -1
     else:
         i = 0
-    
-    count = 0
 
+    if today_day == "Sun" and today.hour < 10:
+        count = 1
+        days += 1
+    else:
+        count = 0
+
+    # if today_day == "Sun":
+    #     i = 0
+    
+    # if today.hour < 10:
+    #     count = -1
+    #     i = -1
+    # else:
+    #     count = 0
+    #     i = 0
+
+    # count = 0
+    # i = 0
     while count < days:
         date = (today + timedelta(days = i))
         i += 1
