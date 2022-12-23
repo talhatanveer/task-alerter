@@ -1,5 +1,5 @@
 # Task Alerter
-A hobby project to manage chores for my fraternity. Sends alerts via text message and includes some basic endpoints for pulling informaton from the csv file (e.g. you can build a shortcut to get a chore with ioS Shortcuts). Uses a remotely hosted CSV file as its database (e.g. Google Sheets).
+A hobby project to manage chores for my fraternity. Sends alerts via text message and includes some basic endpoints for pulling informaton from a remote csv file (e.g. you can build a shortcut to get a chore with ioS Shortcuts). Uses a remotely hosted CSV file as its database (e.g. Google Sheets).
 
 
 ## Environment Variables
